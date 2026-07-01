@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Аналітичний дашборд арбітражу OLX</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <h1>Аналітичний дашборд арбітражу <span class="accent">OLX</span></h1>
+    <div id="mode-badge" class="badge">…</div>
+  </header>
+
+  <main>
+    <section class="kpis">
+      <div class="kpi"><span class="kpi-label">Загальний капітал</span><span id="kpi-capital" class="kpi-value">—</span></div>
+      <div class="kpi"><span class="kpi-label">Чистий прибуток (місяць)</span><span id="kpi-profit" class="kpi-value">—</span></div>
+      <div class="kpi"><span class="kpi-label">Товарів на складі</span><span id="kpi-stock" class="kpi-value">—</span></div>
+      <div class="kpi"><span class="kpi-label">Середній ROI угоди</span><span id="kpi-roi" class="kpi-value">—</span></div>
+    </section>
+
+    <section class="metrics">
+      <h2>Стратегічні метрики</h2>
+      <div class="metric-grid">
+        <div><span>Коефіцієнт оборотності</span><b id="m-turnover">—</b></div>
+        <div><span>Середній термін реалізації</span><b id="m-realization">—</b></div>
+        <div><span>Рентабельність капіталу (ROC)</span><b id="m-roc">—</b></div>
+        <div><span>Відсоток відхилених лотів</span><b id="m-rejected">—</b></div>
+      </div>
+    </section>
+
+    <div class="two-col">
+      <section class="panel">
+        <h2>Пошукові кампанії</h2>
+        <form id="campaign-form" class="inline-form">
+          <input name="query" placeholder="Запит (напр. iPhone 13 Pro Max)" required />
+          <input name="min_discount" type="number" step="1" value="20" title="Мін. дисконт %" />
+          <input name="weight_kg" type="number" step="0.1" value="1.0" title="Вага, кг" />
+          <button type="submit">Запустити</button>
+        </form>
+        <table id="campaigns-table">
+          <thead><tr><th>#</th><th>Запит</th><th>Ринкова</th><th>Статус</th><th>Скан/Відхил.</th><th></th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </section>
+
+      <section class="panel">
+        <h2>Виявлені вигідні лоти</h2>
+        <div class="muted" id="deals-hint">Оберіть кампанію та натисніть «Сканувати».</div>
+        <table id="deals-table">
+          <thead><tr><th>Товар</th><th>Ціна</th><th>Дисконт</th><th>Скоринг</th><th>Прибуток</th><th>Ризики</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </section>
+    </div>
+
+    <div class="two-col">
+      <section class="panel">
+        <h2>Склад та облік товарів</h2>
+        <form id="buy-form" class="inline-form">
+          <input name="title" placeholder="Назва товару" required />
+          <input name="purchase_price" type="number" step="0.01" placeholder="Ціна купівлі" required />
+          <input name="estimated_market_price" type="number" step="0.01" placeholder="Ринкова ціна" required />
+          <input name="delivery_cost" type="number" step="0.01" placeholder="Доставка" value="0" />
+          <button type="submit">Купити</button>
+        </form>
+        <table id="inventory-table">
+          <thead><tr><th>#</th><th>Товар</th><th>Собівартість</th><th>Статус</th><th>Дії</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </section>
+
+      <section class="panel">
+        <h2>Оборотно-сальдова відомість (подвійний запис)</h2>
+        <form id="capital-form" class="inline-form">
+          <input name="amount" type="number" step="0.01" placeholder="Внесок капіталу" required />
+          <button type="submit">Внести капітал</button>
+        </form>
+        <table id="ledger-table">
+          <thead><tr><th>Код</th><th>Рахунок</th><th>Клас</th><th>Баланс</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </section>
+    </div>
+  </main>
+
+  <div id="toast" class="toast"></div>
+  <script src="/static/app.js"></script>
+</body>
+</html>
