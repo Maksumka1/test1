@@ -1,19 +1,33 @@
 """Market valuation and offer scoring engine.
 
-Two-stage "good/bad option" algorithm from the spec:
+==============================================================================
+ПІДСУМОК ТА АРХІТЕКТУРНІ ЗАМІТКИ: app/valuation.py
+==============================================================================
 
-1. Semantic clustering of offers to isolate dense groups of comparable items
-   (e.g. the same memory variant of a phone) and drop noise (accessories,
-   broken units).  The spec calls for Doc2Vec + DBSCAN; here we use a
-   lightweight TF-IDF vectoriser (character + word n-grams) feeding the same
-   DBSCAN density clustering.  The vectoriser is swappable for a trained
-   Doc2Vec model without touching the rest of the pipeline.
-2. IQR outlier filtering *inside* the dominant cluster to remove statistical
-   anomalies before computing the market price ``P_market``.
+Роль коду в системі:
+"Визначає ринкову ціну та оцінює привабливість" (Statistical Engine & Valuation Core).
 
-Then each new lot gets an attractiveness score ``S in [0, 100]``:
+Призначення:
+Семантична кластеризація оголошень (TF-IDF + DBSCAN), статистичне очищення 
+цінових аномалій (IQR) для обчислення P_market та багатокритеріальний скоринг (S_total).
 
-    S = 0.5 * S_price + 0.3 * S_text + 0.2 * S_reputation
+Ключові паттерни та рішення розробника:
+1. Двоетапна очистка цінових даних:
+   - Семантичний фільтр: TF-IDF (1-2 грамові слова) + DBSCAN (косинусна відстань) 
+     групують схожі пропозиції та відсікають нерелевантний шум (аксесуари, запчастини).
+   - Статистичний фільтр: IQR (Interquartile Range) видаляє цінові викиди 
+     поза межами [Q1 - 1.5*IQR, Q3 + 1.5*IQR].
+2. Комплексний скоринг лотів S = 0.5*S_price + 0.3*S_text + 0.2*S_reputation:
+   - S_price: Максимум (100) при дисконті 20-35%. Дисконт > 50% карається 0 балів (скам).
+   - S_text: База 60 балів (+10 за GREEN_WORDS, -25 за RED_WORDS ризики).
+   - S_reputation: Градація довіри від віку акаунта продавця (від 10 до 90 балів).
+3. Використання Dataclasses:
+   Строгі класи `MarketValuation` та `OfferScore` для збереження проміжних результатів.
+
+Оцінка коду та покращення:
+- Плюси: Висока точність оцінки ринку, надійний захист від скаму, чиста математика.
+- Мінуси: Точний пошук слів-маркерів без урахування відмінків української мови 
+  (доцільно додати стемінг або лематизацію для GREEN_WORDS / RED_WORDS).
 """
 from __future__ import annotations
 

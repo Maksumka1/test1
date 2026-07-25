@@ -1,8 +1,24 @@
-"""Pytest bootstrap: route integration tests to a dedicated test database.
+"""
+==============================================================================
+ПІДСУМОК ТА АРХІТЕКТУРНІ ЗАМІТКИ: tests/conftest.py
+==============================================================================
 
-Ensures the ledger integration tests never pollute the development/demo
-database. The test DB name is the configured one suffixed with ``_test`` and is
-created automatically if missing (when PostgreSQL is reachable).
+Роль коду в системі:
+"Налаштовує тестове середовище" (Pytest Bootstrap & Test DB Provisioning).
+
+Призначення:
+Перенаправлення з'єднань тестів на окрему тестову базу даних з суфіксом `_test` 
+для запобігання забрудненню основної БД розробки.
+
+Ключові паттерни та рішення розробника:
+1. Ізоляція тестового середовища (Test DB Isolation):
+   Динамічна підміна `DATABASE_URL` у змінних оточення на тестову ім'я-версію.
+2. Автоматична ініціалізація бази (Auto-provisioning):
+   Якщо тестова БД відсутня, скрипт підключається до postgres-сервера та 
+   виконує `CREATE DATABASE` перед запуском тестів.
+3. М'яка обробка недоступності БД:
+   Якщо PostgreSQL вимкнено, конфігурація не блокує виконання звичайних юніт-тестів.
+==============================================================================
 """
 from __future__ import annotations
 
